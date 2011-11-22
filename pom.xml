@@ -3,6 +3,38 @@
   <groupId>com.ml</groupId>
   <artifactId>HadoopCryptCompressor</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+   <build>
+	<plugins>
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+              <source>1.6</source>
+              <target>1.6</target>
+          </configuration>
+      </plugin>
+      <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+	            <descriptors>
+                    <descriptor>assembly.xml</descriptor>
+                </descriptors>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>make-assembly</id>
+                    <phase>package</phase>
+                    <goals>
+                        <goal>attached</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
+     
+	</plugins>
+   </build>
+  
     <dependencies>
       <dependency>
       <groupId>apache-haddop</groupId>
