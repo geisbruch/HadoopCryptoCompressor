@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ml</groupId>
+  <artifactId>HadoopCryptCompressor</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+    <dependencies>
+      <dependency>
+      <groupId>apache-haddop</groupId>
+      <artifactId>hadoop-core-0.20.2-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hadoop-core-0.20.2-cdh3u1.jar</systemPath>
+      <!--<systemPath>${project.basedir}/hadoopLib/hadoop-core-0.20.3-CDH3-SNAPSHOT.jar</systemPath>-->
+    </dependency> 
+      <dependency>
+      	<groupId>log4j</groupId>
+      	<artifactId>log4j</artifactId>
+      	<version>1.2.9</version>
+      	<type>jar</type>
+      	<scope>provided</scope>
+      </dependency>
+      <dependency>
+  		<groupId>commons-logging</groupId>
+  		<artifactId>commons-logging</artifactId>
+  		<version>1.0.4</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+      <dependency>
+      	<groupId>commons-codec</groupId>
+      	<artifactId>commons-codec</artifactId>
+      	<version>20041127.091804</version>
+      	<type>jar</type>
+      	<scope>compile</scope>
+      </dependency>
+    </dependencies>
+</project>
