@@ -1,6 +1,4 @@
 package org.apache.hadoop.io.compress.crypto;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -89,13 +87,21 @@ public class CryptoBasicCompressor implements Compressor {
 	}
 
 	@Override
-	public void reinit(Configuration arg0) {
-
+	public void reinit(Configuration conf) {
+		this.reset();
 	}
 
+	/**
+	 * Reset the stats and status
+	 */
 	@Override
 	public void reset() {
-
+		read = new Long(0l);
+		wrote = new Long(0l);
+		in = null;
+		remain = null;
+		finish = false;
+		finished = false;
 	}
 
 	@Override

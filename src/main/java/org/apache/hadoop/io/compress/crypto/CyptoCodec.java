@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.compress.BlockCompressorStream;
@@ -14,18 +16,30 @@ import org.apache.hadoop.io.compress.CompressionOutputStream;
 import org.apache.hadoop.io.compress.Compressor;
 import org.apache.hadoop.io.compress.Decompressor;
 
+/**
+ * This Crypt Codec enable you to create crypto files using this codec as a compressor
+ * so you can use encripted files on hadoop
+ * 
+ * @author geisbruch
+ *
+ */
 public class CyptoCodec implements CompressionCodec, Configurable {
 	
-	public static final String CRYPTO_DEFAULT_EXT = ".cypto";
+	private static final Log LOG= 
+		    LogFactory.getLog(CyptoCodec.class);
+	
+	public static final String CRYPTO_DEFAULT_EXT = ".crypto";
 	public static final String CRYPTO_SECRET_KEY = "cypto.secret.key";
 	private Configuration config;
 	@Override
 	public Compressor createCompressor() {
+		LOG.info("Creating compressor");
 		return new CryptoBasicCompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
 	@Override
 	public Decompressor createDecompressor() {
+		LOG.info("Creating decompressor");
 		return new CryptoBasicDecompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
@@ -38,6 +52,7 @@ public class CyptoCodec implements CompressionCodec, Configurable {
 	@Override
 	public CompressionInputStream createInputStream(InputStream in,
 			Decompressor decomp) throws IOException {
+		LOG.info("Creating input stream");
 		return new BlockDecompressorStream(in, decomp);
 	}
 
@@ -50,6 +65,7 @@ public class CyptoCodec implements CompressionCodec, Configurable {
 	@Override
 	public CompressionOutputStream createOutputStream(OutputStream out,
 			Compressor comp) throws IOException {
+		LOG.info("Creating output stream");
 		return new BlockCompressorStream(out, comp);
 	}
 
@@ -76,7 +92,6 @@ public class CyptoCodec implements CompressionCodec, Configurable {
 	@Override
 	public void setConf(Configuration config) {
 		this.config = config;
-		
 	}
 
 }

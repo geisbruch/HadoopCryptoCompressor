@@ -76,61 +76,17 @@ public class TestCodec {
     LogFactory.getLog(TestCodec.class);
 
   private Configuration conf = new Configuration();
-  private int count = 1;
+  private int count = 10000;
   private int seed = new Random().nextInt();
 
-//  @Test
-//  public void testDefaultCodec() throws IOException {
-//    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.DefaultCodec");
-//    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.DefaultCodec");
-//  }
   
   @Test
   public void testCryptoCodec() throws IOException {
 	conf.set(CyptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
-//    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.crypto.CyptoCodec");
+    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.crypto.CyptoCodec");
     codecTest(conf, seed, count, "org.apache.hadoop.io.compress.crypto.CyptoCodec");
   }
 
-//  @Test
-//  public void testGzipCodec() throws IOException {
-//    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.GzipCodec");
-//    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.GzipCodec");
-//  }
-//
-//  @Test
-//  public void testBZip2Codec() throws IOException {
-//    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.BZip2Codec");
-//    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.BZip2Codec");
-//  }
-//  
-//  @Test
-//  public void testSnappyCodec() throws IOException {
-//    if (LoadSnappy.isAvailable()) {
-//      if (LoadSnappy.isLoaded()) {
-//        codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.SnappyCodec");
-//        codecTest(conf, seed, count, "org.apache.hadoop.io.compress.SnappyCodec");
-//      }
-//      else {
-//        Assert.fail("Snappy native available but Hadoop native not");
-//      }
-//    }
-//  }
-//
-//  @Test
-//  public void testDeflateCodec() throws IOException {
-//    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.DeflateCodec");
-//    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.DeflateCodec");
-//  }
-//
-//  @Test
-//  public void testGzipCodecWithParam() throws IOException {
-//    Configuration conf = new Configuration(this.conf);
-//    ZlibFactory.setCompressionLevel(conf, CompressionLevel.BEST_COMPRESSION);
-//    ZlibFactory.setCompressionStrategy(conf, CompressionStrategy.HUFFMAN_ONLY);
-//    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.GzipCodec");
-//    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.GzipCodec");
-//  }
 
   private static void codecTest(Configuration conf, int seed, int count, 
                                 String codecClass) 
@@ -171,13 +127,12 @@ public class TestCodec {
     LOG.info("Finished compressing data");
     
     
-    FileInputStream f = new FileInputStream("/home/geisbruch/crypto");
     // De-compress data
     DataInputBuffer deCompressedDataBuffer = new DataInputBuffer();
     deCompressedDataBuffer.reset(compressedDataBuffer.getData(), 0, 
                                  compressedDataBuffer.getLength());
     CompressionInputStream inflateFilter = 
-      codec.createInputStream(f);
+      codec.createInputStream(deCompressedDataBuffer);
     DataInputStream inflateIn = 
       new DataInputStream(new BufferedInputStream(inflateFilter));
 
@@ -218,250 +173,17 @@ public class TestCodec {
     LOG.info("SUCCESS! Completed checking " + count + " records");
   }
 
-//  @Test
-//  public void testSplitableCodecs() throws Exception {
-//    testSplitableCodec(BZip2Codec.class);
-//  }
 
-  private void testSplitableCodec(
-      Class<? extends SplittableCompressionCodec> codecClass)
-      throws IOException {
-    final long DEFLBYTES = 2 * 1024 * 1024;
-    final Configuration conf = new Configuration();
-    final Random rand = new Random();
-    final long seed = rand.nextLong();
-    LOG.info("seed: " + seed);
-    rand.setSeed(seed);
-    SplittableCompressionCodec codec =
-      ReflectionUtils.newInstance(codecClass, conf);
-    final FileSystem fs = FileSystem.getLocal(conf);
-    final FileStatus infile =
-      fs.getFileStatus(writeSplitTestFile(fs, rand, codec, DEFLBYTES));
-    if (infile.getLen() > Integer.MAX_VALUE) {
-      fail("Unexpected compression: " + DEFLBYTES + " -> " + infile.getLen());
-    }
-    final int flen = (int) infile.getLen();
-    final Text line = new Text();
-    final Decompressor dcmp = CodecPool.getDecompressor(codec);
-    try {
-      for (int pos = 0; pos < infile.getLen(); pos += rand.nextInt(flen / 8)) {
-        // read from random positions, verifying that there exist two sequential
-        // lines as written in writeSplitTestFile
-        final SplitCompressionInputStream in =
-          codec.createInputStream(fs.open(infile.getPath()), dcmp,
-              pos, flen, SplittableCompressionCodec.READ_MODE.BYBLOCK);
-        if (in.getAdjustedStart() >= flen) {
-          break;
-        }
-        LOG.info("SAMPLE " + in.getAdjustedStart() + "," + in.getAdjustedEnd());
-        final LineReader lreader = new LineReader(in);
-        lreader.readLine(line); // ignore; likely partial
-        if (in.getPos() >= flen) {
-          break;
-        }
-        lreader.readLine(line);
-        final int seq1 = readLeadingInt(line);
-        lreader.readLine(line);
-        if (in.getPos() >= flen) {
-          break;
-        }
-        final int seq2 = readLeadingInt(line);
-        assertEquals("Mismatched lines", seq1 + 1, seq2);
-      }
-    } finally {
-      CodecPool.returnDecompressor(dcmp);
-    }
-    // remove on success
-    fs.delete(infile.getPath().getParent(), true);
+ 
+  @Test
+  public void testSequenceFileCryptoCodec() throws IOException, ClassNotFoundException,
+      InstantiationException, IllegalAccessException {
+	conf.set(CyptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
+    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.crypto.CyptoCodec", 100);
+    sequenceFileCodecTest(conf, 200000,"org.apache.hadoop.io.compress.crypto.CyptoCodec", 1000000);
   }
 
-  private static int readLeadingInt(Text txt) throws IOException {
-    DataInputStream in =
-      new DataInputStream(new ByteArrayInputStream(txt.getBytes()));
-    return in.readInt();
-  }
-
-  /** Write infLen bytes (deflated) to file in test dir using codec.
-   * Records are of the form
-   * &lt;i&gt;&lt;b64 rand&gt;&lt;i+i&gt;&lt;b64 rand&gt;
-   */
-  private static Path writeSplitTestFile(FileSystem fs, Random rand,
-      CompressionCodec codec, long infLen) throws IOException {
-    final int REC_SIZE = 1024;
-    final Path wd = new Path(new Path(
-          System.getProperty("test.build.data", "/tmp")).makeQualified(fs),
-        codec.getClass().getSimpleName());
-    final Path file = new Path(wd, "test" + codec.getDefaultExtension());
-    final byte[] b = new byte[REC_SIZE];
-    final Base64 b64 = new Base64();
-    DataOutputStream fout = null;
-    Compressor cmp = CodecPool.getCompressor(codec);
-    try {
-      fout = new DataOutputStream(codec.createOutputStream(
-            fs.create(file, true), cmp));
-      final DataOutputBuffer dob = new DataOutputBuffer(REC_SIZE * 4 / 3 + 4);
-      int seq = 0;
-      while (infLen > 0) {
-        rand.nextBytes(b);
-        final byte[] b64enc = b64.encode(b); // ensures rand printable, no LF
-        dob.reset();
-        dob.writeInt(seq);
-        System.arraycopy(dob.getData(), 0, b64enc, 0, dob.getLength());
-        fout.write(b64enc);
-        fout.write('\n');
-        ++seq;
-        infLen -= b64enc.length;
-      }
-      LOG.info("Wrote " + seq + " records to " + file);
-    } finally {
-      IOUtils.cleanup(LOG, fout);
-      CodecPool.returnCompressor(cmp);
-    }
-    return file;
-  }
-
-//  @Test
-//  public void testCodecPoolGzipReuse() throws Exception {
-//    Configuration conf = new Configuration();
-//    conf.setBoolean("hadoop.native.lib", true);
-//    if (!ZlibFactory.isNativeZlibLoaded(conf)) {
-//      LOG.warn("testCodecPoolGzipReuse skipped: native libs not loaded");
-//      return;
-//    }
-//    GzipCodec gzc = ReflectionUtils.newInstance(GzipCodec.class, conf);
-//    DefaultCodec dfc = ReflectionUtils.newInstance(DefaultCodec.class, conf);
-//    Compressor c1 = CodecPool.getCompressor(gzc);
-//    Compressor c2 = CodecPool.getCompressor(dfc);
-//    CodecPool.returnCompressor(c1);
-//    CodecPool.returnCompressor(c2);
-//    assertTrue("Got mismatched ZlibCompressor", c2 != CodecPool.getCompressor(gzc));
-//  }
-
-  private static void gzipReinitTest(Configuration conf, CompressionCodec codec)
-      throws IOException {
-    // Add codec to cache
-    ZlibFactory.setCompressionLevel(conf, CompressionLevel.BEST_COMPRESSION);
-    ZlibFactory.setCompressionStrategy(conf,
-        CompressionStrategy.DEFAULT_STRATEGY);
-    Compressor c1 = CodecPool.getCompressor(codec);
-    CodecPool.returnCompressor(c1);
-    // reset compressor's compression level to perform no compression
-    ZlibFactory.setCompressionLevel(conf, CompressionLevel.NO_COMPRESSION);
-    Compressor c2 = CodecPool.getCompressor(codec, conf);
-    // ensure same compressor placed earlier
-    assertTrue("Got mismatched ZlibCompressor", c1 == c2);
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    CompressionOutputStream cos = null;
-    // write trivially compressable data
-    byte[] b = new byte[1 << 15];
-    Arrays.fill(b, (byte) 43);
-    try {
-      cos = codec.createOutputStream(bos, c2);
-      cos.write(b);
-    } finally {
-      if (cos != null) {
-        cos.close();
-      }
-      CodecPool.returnCompressor(c2);
-    }
-    byte[] outbytes = bos.toByteArray();
-    // verify data were not compressed
-    assertTrue("Compressed bytes contrary to configuration",
-               outbytes.length >= b.length);
-  }
-
-  private static void codecTestWithNOCompression (Configuration conf,
-                      String codecClass) throws IOException {
-    // Create a compressor with NO_COMPRESSION and make sure that
-    // output is not compressed by comparing the size with the
-    // original input
-
-    CompressionCodec codec = null;
-    ZlibFactory.setCompressionLevel(conf, CompressionLevel.NO_COMPRESSION);
-    try {
-      codec = (CompressionCodec)
-        ReflectionUtils.newInstance(conf.getClassByName(codecClass), conf);
-    } catch (ClassNotFoundException cnfe) {
-      throw new IOException("Illegal codec!");
-    }
-    Compressor c = codec.createCompressor();
-    // ensure same compressor placed earlier
-    ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    CompressionOutputStream cos = null;
-    // write trivially compressable data
-    byte[] b = new byte[1 << 15];
-    Arrays.fill(b, (byte) 43);
-    try {
-      cos = codec.createOutputStream(bos, c);
-      cos.write(b);
-    } finally {
-      if (cos != null) {
-        cos.close();
-      }
-    }
-    byte[] outbytes = bos.toByteArray();
-    // verify data were not compressed
-    assertTrue("Compressed bytes contrary to configuration(NO_COMPRESSION)",
-               outbytes.length >= b.length);
-  }
-
-//  @Test
-//  public void testCodecInitWithCompressionLevel() throws Exception {
-//    Configuration conf = new Configuration();
-//    conf.setBoolean("io.native.lib.available", true);
-//    if (ZlibFactory.isNativeZlibLoaded(conf)) {
-//      LOG.info("testCodecInitWithCompressionLevel with native");
-//      codecTestWithNOCompression(conf,
-//                            "org.apache.hadoop.io.compress.GzipCodec");
-//      codecTestWithNOCompression(conf,
-//                         "org.apache.hadoop.io.compress.DefaultCodec");
-//    } else {
-//      LOG.warn("testCodecInitWithCompressionLevel for native skipped"
-//               + ": native libs not loaded");
-//    }
-//    conf = new Configuration();
-//    conf.setBoolean("io.native.lib.available", false);
-//    codecTestWithNOCompression( conf,
-//                         "org.apache.hadoop.io.compress.DefaultCodec");
-//  }
-//
-//
-//  @Test
-//  public void testCodecPoolCompressorReinit() throws Exception {
-//    Configuration conf = new Configuration();
-//    conf.setBoolean("hadoop.native.lib", true);
-//    if (ZlibFactory.isNativeZlibLoaded(conf)) {
-//      GzipCodec gzc = ReflectionUtils.newInstance(GzipCodec.class, conf);
-//      gzipReinitTest(conf, gzc);
-//    } else {
-//      LOG.warn("testCodecPoolCompressorReinit skipped: native libs not loaded");
-//    }
-//    conf.setBoolean("hadoop.native.lib", false);
-//    DefaultCodec dfc = ReflectionUtils.newInstance(DefaultCodec.class, conf);
-//    gzipReinitTest(conf, dfc);
-//  }
-//
-//  @Test
-//  public void testSequenceFileDefaultCodec() throws IOException, ClassNotFoundException,
-//      InstantiationException, IllegalAccessException {
-//    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.DefaultCodec", 100);
-//    sequenceFileCodecTest(conf, 200000, "org.apache.hadoop.io.compress.DefaultCodec", 1000000);
-//  }
-//
-//  @Test
-//  public void testSequenceFileBZip2Codec() throws IOException, ClassNotFoundException,
-//      InstantiationException, IllegalAccessException {
-//    sequenceFileCodecTest(conf, 0, "org.apache.hadoop.io.compress.BZip2Codec", 100);
-//    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.BZip2Codec", 100);
-//    sequenceFileCodecTest(conf, 200000, "org.apache.hadoop.io.compress.BZip2Codec", 1000000);
-//  }
-//
-//  @Test
-//  public void testSequenceFileDeflateCodec() throws IOException, ClassNotFoundException,
-//      InstantiationException, IllegalAccessException {
-//    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.DeflateCodec", 100);
-//    sequenceFileCodecTest(conf, 200000, "org.apache.hadoop.io.compress.DeflateCodec", 1000000);
-//  }
+  
 
   private static void sequenceFileCodecTest(Configuration conf, int lines, 
                                 String codecClass, int blockSize) 
@@ -541,155 +263,6 @@ public class TestCodec {
       e.printStackTrace();
     }
     
-  }
-
-//  @Test
-//  public void testCodecPoolAndGzipDecompressor() {
-//    // BuiltInZlibInflater should not be used as the GzipCodec decompressor.
-//    // Assert that this is the case.
-//
-//    // Don't use native libs for this test.
-//    Configuration conf = new Configuration();
-//    conf.setBoolean("hadoop.native.lib", false);
-//    assertFalse("ZlibFactory is using native libs against request",
-//        ZlibFactory.isNativeZlibLoaded(conf));
-//
-//    // This should give us a BuiltInZlibInflater.
-//    Decompressor zlibDecompressor = ZlibFactory.getZlibDecompressor(conf);
-//    assertNotNull("zlibDecompressor is null!", zlibDecompressor);
-//    assertTrue("ZlibFactory returned unexpected inflator",
-//        zlibDecompressor instanceof BuiltInZlibInflater);
-//
-//    // Asking for a decompressor directly from GzipCodec should return null;
-//    // its createOutputStream() just wraps the existing stream in a
-//    // java.util.zip.GZIPOutputStream.
-//    CompressionCodecFactory ccf = new CompressionCodecFactory(conf);
-//    CompressionCodec codec = ccf.getCodec(new Path("foo.gz"));
-//    assertTrue("Codec for .gz file is not GzipCodec", codec instanceof GzipCodec);
-//    Decompressor codecDecompressor = codec.createDecompressor();
-//    if (null != codecDecompressor) {
-//      fail("Got non-null codecDecompressor: " + codecDecompressor);
-//    }
-//
-//    // Asking the CodecPool for a decompressor for GzipCodec
-//    // should return null as well.
-//    Decompressor poolDecompressor = CodecPool.getDecompressor(codec);
-//    if (null != poolDecompressor) {
-//      fail("Got non-null poolDecompressor: " + poolDecompressor);
-//    }
-//
-//    // If we then ensure that the pool is populated...
-//    CodecPool.returnDecompressor(zlibDecompressor);
-//
-//    // Asking the pool another time should still not bind this to GzipCodec.
-//    poolDecompressor = CodecPool.getDecompressor(codec);
-//    if (null != poolDecompressor) {
-//      fail("Second time, got non-null poolDecompressor: "
-//          + poolDecompressor);
-//    }
-//  }
-
-  public void testGzipCodecRead() throws IOException {
-    // Create a gzipped file and try to read it back, using a decompressor
-    // from the CodecPool.
-
-    // Don't use native libs for this test.
-    Configuration conf = new Configuration();
-    conf.setBoolean("hadoop.native.lib", false);
-    assertFalse("ZlibFactory is using native libs against request",
-        ZlibFactory.isNativeZlibLoaded(conf));
-
-    // Ensure that the CodecPool has a BuiltInZlibInflater in it.
-    Decompressor zlibDecompressor = ZlibFactory.getZlibDecompressor(conf);
-    assertNotNull("zlibDecompressor is null!", zlibDecompressor);
-    assertTrue("ZlibFactory returned unexpected inflator",
-        zlibDecompressor instanceof BuiltInZlibInflater);
-    CodecPool.returnDecompressor(zlibDecompressor);
-
-    // Now create a GZip text file.
-    String tmpDir = System.getProperty("test.build.data", "/tmp/");
-    Path f = new Path(new Path(tmpDir), "testGzipCodecRead.txt.gz");
-    BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-      new GZIPOutputStream(new FileOutputStream(f.toString()))));
-    final String msg = "This is the message in the file!";
-    bw.write(msg);
-    bw.close();
-
-    // Now read it back, using the CodecPool to establish the
-    // decompressor to use.
-    CompressionCodecFactory ccf = new CompressionCodecFactory(conf);
-    CompressionCodec codec = ccf.getCodec(f);
-    Decompressor decompressor = CodecPool.getDecompressor(codec);
-    FileSystem fs = FileSystem.getLocal(conf);
-    InputStream is = fs.open(f);
-    is = codec.createInputStream(is, decompressor);
-    BufferedReader br = new BufferedReader(new InputStreamReader(is));
-    String line = br.readLine();
-    assertEquals("Didn't get the same message back!", msg, line);
-    br.close();
-  }
-
-  private void verifyGzipFile(String filename, String msg) throws IOException {
-    BufferedReader r = new BufferedReader(new InputStreamReader(
-        new GZIPInputStream(new FileInputStream(filename))));
-    try {
-      String line = r.readLine();
-      assertEquals("Got invalid line back from " + filename, msg, line);
-    } finally {
-      r.close();
-      new File(filename).delete();
-    }
-  }
-
-  public void testGzipCodecWrite() throws IOException {
-    // Create a gzipped file using a compressor from the CodecPool,
-    // and try to read it back via the regular GZIPInputStream.
-
-    // Don't use native libs for this test.
-    Configuration conf = new Configuration();
-    conf.setBoolean("hadoop.native.lib", false);
-    assertFalse("ZlibFactory is using native libs against request",
-        ZlibFactory.isNativeZlibLoaded(conf));
-
-    // Ensure that the CodecPool has a BuiltInZlibDeflater in it.
-    Compressor zlibCompressor = ZlibFactory.getZlibCompressor(conf);
-    assertNotNull("zlibCompressor is null!", zlibCompressor);
-    assertTrue("ZlibFactory returned unexpected deflator",
-        zlibCompressor instanceof BuiltInZlibDeflater);
-    CodecPool.returnCompressor(zlibCompressor);
-
-    // Create a GZIP text file via the Compressor interface.
-    CompressionCodecFactory ccf = new CompressionCodecFactory(conf);
-    CompressionCodec codec = ccf.getCodec(new Path("foo.gz"));
-    assertTrue("Codec for .gz file is not GzipCodec", codec instanceof GzipCodec);
-
-    final String msg = "This is the message we are going to compress.";
-    final String tmpDir = System.getProperty("test.build.data", "/tmp/");
-    final String fileName = new Path(new Path(tmpDir),
-        "testGzipCodecWrite.txt.gz").toString();
-
-    BufferedWriter w = null;
-    Compressor gzipCompressor = CodecPool.getCompressor(codec);
-    if (null != gzipCompressor) {
-      // If it gives us back a Compressor, we should be able to use this
-      // to write files we can then read back with Java's gzip tools.
-      OutputStream os = new CompressorStream(new FileOutputStream(fileName),
-          gzipCompressor);
-      w = new BufferedWriter(new OutputStreamWriter(os));
-      w.write(msg);
-      w.close();
-      CodecPool.returnCompressor(gzipCompressor);
-
-      verifyGzipFile(fileName, msg);
-    }
-
-    // Create a gzip text file via codec.getOutputStream().
-    w = new BufferedWriter(new OutputStreamWriter(
-        codec.createOutputStream(new FileOutputStream(fileName))));
-    w.write(msg);
-    w.close();
-
-    verifyGzipFile(fileName, msg);
   }
 
 }

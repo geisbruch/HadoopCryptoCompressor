@@ -32,22 +32,34 @@ public class CryptoBasicDecompressor implements Decompressor {
 	@Override
 	public synchronized int decompress(byte[] buf, int off, int len) throws IOException {
 		finished  = false;
+		
+		//If no dataset ones is needed
 		if(!dataSet){
 			dataSet=true;
 			return 0;
 		}
 		
+		//If there are data remaining
 		if(remain != null && remain.remaining()>0){
 			int size = Math.min(buf.length, remain.remaining());
 			remain.get(buf, off, size);
 			return size;
 		}
+		
 		dataSet = false;
+		
+		//If no data in remaining
+		if(in != null && in.remaining()<=0){
+			finished = true;
+			return 0;
+		}
+		
+		//Standar case
 		byte[] w = new byte[in.remaining()];
-		in.get(w,off,in.remaining());
+		in.get(w,0,in.remaining());
 		byte[] b = crypto.decrypt(w);
 		remain = ByteBuffer.wrap(b);
-		int size = Math.min(buf.length, remain.remaining());
+		int size = Math.min(buf.length-off, remain.remaining());
 		remain.get(buf, off, size);
 		if(remain.remaining()<=0)
 			finished  = true;
@@ -64,7 +76,7 @@ public class CryptoBasicDecompressor implements Decompressor {
 
 	@Override
 	public boolean finished() {
-		return finish && finished;
+		return finished;
 	}
 
 
@@ -77,7 +89,12 @@ public class CryptoBasicDecompressor implements Decompressor {
 
 	@Override
 	public void reset() {
-
+		in = null;
+		finish = false;
+		finished = false;
+		dataSet = false;
+		remain = null;
+		
 	}
 
 	@Override
