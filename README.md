@@ -7,11 +7,11 @@ It's simple, download the jar and put it in your hadoop classpath, so configure 
 
 Example:
 
-    `<property>`
-    `   <name>io.compression.codecs</name>`
-    `   <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,`
-    `   org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.crypto.CyptoCodec</value>`
-    `</property>`
+    `<property>
+       <name>io.compression.codecs</name>
+       <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,
+       org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.crypto.CyptoCodec</value>
+    </property>`
 
 So if you use CryptoCodec as codec you will need to use as config property **cypto.secret.key** to put your public key
 
