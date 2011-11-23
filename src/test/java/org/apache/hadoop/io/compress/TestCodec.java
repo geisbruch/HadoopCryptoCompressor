@@ -50,7 +50,7 @@ import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
-import org.apache.hadoop.io.compress.crypto.CyptoCodec;
+import org.apache.hadoop.io.compress.crypto.CryptoCodec;
 import org.apache.hadoop.io.compress.snappy.LoadSnappy;
 import org.apache.hadoop.io.compress.CompressionOutputStream;
 import org.apache.hadoop.io.compress.CompressorStream;
@@ -82,9 +82,9 @@ public class TestCodec {
   
   @Test
   public void testCryptoCodec() throws IOException {
-	conf.set(CyptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
-    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.crypto.CyptoCodec");
-    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.crypto.CyptoCodec");
+	conf.set(CryptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
+    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.crypto.CryptoCodec");
+    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.crypto.CryptoCodec");
   }
 
 
@@ -178,9 +178,9 @@ public class TestCodec {
   @Test
   public void testSequenceFileCryptoCodec() throws IOException, ClassNotFoundException,
       InstantiationException, IllegalAccessException {
-	conf.set(CyptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
-    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.crypto.CyptoCodec", 100);
-    sequenceFileCodecTest(conf, 200000,"org.apache.hadoop.io.compress.crypto.CyptoCodec", 1000000);
+	conf.set(CryptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
+    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.crypto.CryptoCodec", 100);
+    sequenceFileCodecTest(conf, 200000,"org.apache.hadoop.io.compress.crypto.CryptoCodec", 1000000);
   }
 
   

@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ml</groupId>
-  <artifactId>HadoopCryptCompressor</artifactId>
+  <artifactId>HadoopCryptoCompressor</artifactId>
   <version>0.0.1-SNAPSHOT</version>
    <build>
 	<plugins>
@@ -14,28 +14,12 @@
               <target>1.6</target>
           </configuration>
       </plugin>
-      <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-	            <descriptors>
-                    <descriptor>assembly.xml</descriptor>
-                </descriptors>
-            </configuration>
-            <executions>
-                <execution>
-                    <id>make-assembly</id>
-                    <phase>package</phase>
-                    <goals>
-                        <goal>attached</goal>
-                    </goals>
-                </execution>
-            </executions>
-        </plugin>
+     
      
 	</plugins>
    </build>
   
-    <dependencies>
+  <dependencies>
       <dependency>
       <groupId>apache-haddop</groupId>
       <artifactId>hadoop-core-0.20.2-cdh3u1.jar</artifactId>
@@ -44,33 +28,118 @@
       <systemPath>${project.basedir}/hadoopLib/hadoop-core-0.20.2-cdh3u1.jar</systemPath>
       <!--<systemPath>${project.basedir}/hadoopLib/hadoop-core-0.20.3-CDH3-SNAPSHOT.jar</systemPath>-->
     </dependency> 
-      <dependency>
-      	<groupId>log4j</groupId>
-      	<artifactId>log4j</artifactId>
-      	<version>1.2.9</version>
-      	<type>jar</type>
-      	<scope>provided</scope>
-      </dependency>
-      <dependency>
+  	<dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>hive-cli-0.7.1-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hive-cli-0.7.1-cdh3u1.jar</systemPath>
+    </dependency>
+  	<dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>hive-common-0.7.1-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hive-common-0.7.1-cdh3u1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>hive-exec-0.7.1-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hive-exec-0.7.1-cdh3u1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>hive-jdbc-0.7.1-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hive-jdbc-0.7.1-cdh3u1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>hive-metastore-0.7.1-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hive-metastore-0.7.1-cdh3u1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>hive-service-0.7.1-cdh3u1.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/hive-service-0.7.1-cdh3u1.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>apache-hive</groupId>
+      <artifactId>libfb303.jar</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/hadoopLib/libfb303.jar</systemPath>
+    </dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.8.2</version>
+  		<type>jar</type>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>log4j</groupId>
+  		<artifactId>log4j</artifactId>
+  		<version>1.2.9</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.json</groupId>
+  		<artifactId>json</artifactId>
+  		<version>20090211</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
   		<groupId>commons-logging</groupId>
   		<artifactId>commons-logging</artifactId>
   		<version>1.0.4</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
+  	<dependency>
+  		<groupId>org.apache.thrift</groupId>
+  		<artifactId>libfb303</artifactId>
+  		<version>0.6.1</version>
+  		<type>pom</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-api</artifactId>
+  		<version>1.6.1</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-log4j12</artifactId>
+  		<version>1.6.1</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.quartz-scheduler</groupId>
+  		<artifactId>quartz</artifactId>
+  		<version>2.0.2</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.amazonaws</groupId>
+  		<artifactId>aws-java-sdk</artifactId>
+  		<version>1.2.6</version>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
 
-      <dependency>
-      	<groupId>commons-codec</groupId>
-      	<artifactId>commons-codec</artifactId>
-      	<version>20041127.091804</version>
-      	<type>jar</type>
-      	<scope>compile</scope>
-      </dependency>
-    </dependencies>
 </project>

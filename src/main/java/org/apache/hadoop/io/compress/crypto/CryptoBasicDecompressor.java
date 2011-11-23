@@ -23,6 +23,7 @@ public class CryptoBasicDecompressor implements Decompressor {
 
 	private boolean dataSet = false;
 
+	
 	private ByteBuffer remain;
 	
 	public CryptoBasicDecompressor(String key){

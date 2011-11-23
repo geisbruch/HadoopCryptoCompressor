@@ -143,6 +143,11 @@ public class Crypto {
         try{
             return  dcipher.doFinal(ciphertext);
         } catch (Exception e){
+        	System.out.println("Lenght: "+ ciphertext.length);
+        	for(byte b  : ciphertext){
+        		System.out.print(b);
+        		System.out.print(",");
+        	}
             e.printStackTrace();
             return null;
         }

@@ -23,10 +23,10 @@ import org.apache.hadoop.io.compress.Decompressor;
  * @author geisbruch
  *
  */
-public class CyptoCodec implements CompressionCodec, Configurable {
+public class CryptoCodec implements CompressionCodec, Configurable {
 	
 	private static final Log LOG= 
-		    LogFactory.getLog(CyptoCodec.class);
+		    LogFactory.getLog(CryptoCodec.class);
 	
 	public static final String CRYPTO_DEFAULT_EXT = ".crypto";
 	public static final String CRYPTO_SECRET_KEY = "cypto.secret.key";

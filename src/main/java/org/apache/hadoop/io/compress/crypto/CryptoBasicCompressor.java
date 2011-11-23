@@ -34,12 +34,12 @@ public class CryptoBasicCompressor implements Compressor {
 			wrote += size;
 			if(!remain.hasRemaining()){
 				remain = null;
-				finished = true;
+				setFinished();
 			}
 			return size;
 		}
 		if(in==null || in.remaining()<=0){
-			finished = true;
+			setFinished();
 			return 0;
 		}
 		byte[] w = new byte[in.remaining()];
@@ -49,10 +49,15 @@ public class CryptoBasicCompressor implements Compressor {
 		remain = ByteBuffer.wrap(b);
 		remain.get(buf, off, size);
 		wrote += size;
-		if(remain.remaining()<=0){
-			finished = true;
-		}
+		if(remain.remaining()<=0)
+			setFinished();
 		return size;
+	}
+
+	private void setFinished() {
+		finished = true;
+		read=0l;
+		
 	}
 
 	@Override
@@ -68,7 +73,8 @@ public class CryptoBasicCompressor implements Compressor {
 
 	@Override
 	public boolean finished() {
-		return finish && finished && (remain==null || remain.remaining() <= 0);
+		boolean end = finish && finished && (remain==null || remain.remaining() <= 0);
+		return end;
 	}
 
 	@Override
@@ -111,7 +117,7 @@ public class CryptoBasicCompressor implements Compressor {
 	@Override
 	public synchronized void setInput(byte[] buf, int offset, int length) {
 		in = ByteBuffer.wrap(buf,offset,length);
-		read+=in.remaining();
+		read=new Integer(in.remaining()).longValue();
 		finished  = false;
 	}
 
