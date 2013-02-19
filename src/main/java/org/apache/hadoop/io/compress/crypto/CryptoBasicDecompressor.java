@@ -34,15 +34,15 @@ public class CryptoBasicDecompressor implements Decompressor {
 	public synchronized int decompress(byte[] buf, int off, int len) throws IOException {
 		finished  = false;
 		
-		//If no dataset ones is needed
+		//If no dataset one is needed
 		if(!dataSet){
 			dataSet=true;
 			return 0;
 		}
 		
-		//If there are data remaining
+		//If there is data remaining
 		if(remain != null && remain.remaining()>0){
-			int size = Math.min(buf.length, remain.remaining());
+			int size = Math.min(len, remain.remaining());
 			remain.get(buf, off, size);
 			return size;
 		}
@@ -55,12 +55,12 @@ public class CryptoBasicDecompressor implements Decompressor {
 			return 0;
 		}
 		
-		//Standar case
+		//Standard case
 		byte[] w = new byte[in.remaining()];
 		in.get(w,0,in.remaining());
 		byte[] b = crypto.decrypt(w);
 		remain = ByteBuffer.wrap(b);
-		int size = Math.min(buf.length-off, remain.remaining());
+		int size = Math.min(len, remain.remaining());
 		remain.get(buf, off, size);
 		if(remain.remaining()<=0)
 			finished  = true;
