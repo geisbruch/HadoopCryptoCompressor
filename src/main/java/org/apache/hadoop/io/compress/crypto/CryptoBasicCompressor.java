@@ -29,7 +29,7 @@ public class CryptoBasicCompressor implements Compressor {
 	public synchronized int compress(byte[] buf, int off, int len) throws IOException {
 		finished  = false;
 		if(remain != null && remain.remaining()>0){
-			int size = Math.min(buf.length, remain.remaining());
+			int size = Math.min(len, remain.remaining());
 			remain.get(buf, off, size);
 			wrote += size;
 			if(!remain.hasRemaining()){
@@ -45,7 +45,7 @@ public class CryptoBasicCompressor implements Compressor {
 		byte[] w = new byte[in.remaining()];
 		in.get(w);
 		byte[] b = crypto.encrypt(w);
-		int size = Math.min(buf.length, b.length);
+		int size = Math.min(len, b.length);
 		remain = ByteBuffer.wrap(b);
 		remain.get(buf, off, size);
 		wrote += size;
