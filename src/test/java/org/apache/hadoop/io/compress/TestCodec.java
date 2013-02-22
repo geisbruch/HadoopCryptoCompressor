@@ -17,57 +17,28 @@
  */
 package org.apache.hadoop.io.compress;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.util.Arrays;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.Random;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.DataInputBuffer;
 import org.apache.hadoop.io.DataOutputBuffer;
-import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.io.RandomDatum;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.compress.crypto.CryptoCodec;
-import org.apache.hadoop.io.compress.snappy.LoadSnappy;
-import org.apache.hadoop.io.compress.CompressionOutputStream;
-import org.apache.hadoop.io.compress.CompressorStream;
-import org.apache.hadoop.io.compress.zlib.BuiltInZlibDeflater;
-import org.apache.hadoop.io.compress.zlib.BuiltInZlibInflater;
-import org.apache.hadoop.io.compress.zlib.ZlibCompressor.CompressionLevel;
-import org.apache.hadoop.io.compress.zlib.ZlibCompressor.CompressionStrategy;
-import org.apache.hadoop.io.compress.zlib.ZlibFactory;
-import org.apache.hadoop.util.LineReader;
 import org.apache.hadoop.util.ReflectionUtils;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
 import static org.junit.Assert.*;
 
 public class TestCodec {
@@ -78,8 +49,61 @@ public class TestCodec {
   private Configuration conf = new Configuration();
   private int count = 10000;
   private int seed = new Random().nextInt();
+    
+  @Test
+  public void testDecryptWithSmallerBuffer() throws IOException, ClassNotFoundException{
+      codecBufferSizeTest(1024,496);
+  }
 
-  
+  @Test
+  public void testDecryptFileWithLargerBuffer() throws IOException,ClassNotFoundException {
+      codecBufferSizeTest(496,1024);
+  }
+
+    void codecBufferSizeTest(int compressBufferSize, int decompressBufferSize) throws IOException, ClassNotFoundException {
+        DataOutputBuffer data = new DataOutputBuffer();
+        RandomDatum.Generator generator = new RandomDatum.Generator(seed);
+        for(int i=0; i < 20; ++i) {
+            generator.next();
+            RandomDatum key = generator.getKey();
+            RandomDatum value = generator.getValue();
+
+            key.write(data);
+            value.write(data);
+        }
+        LOG.info("Generated " + count + " records");
+
+        conf.set(CryptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
+        CompressionCodec c = (CompressionCodec) ReflectionUtils.newInstance(conf.getClassByName(CryptoCodec.class.getName()), conf);
+        // Compress data
+        DataOutputBuffer compressedDataBuffer = new DataOutputBuffer();
+        CompressionOutputStream os =
+                c.createOutputStream(compressedDataBuffer);
+        LOG.info("Finished compressing data");
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(data.getData());
+        byte[] b = new byte[compressBufferSize];
+        int len;
+        while((len = bis.read(b)) > 0) {
+            os.write(b,0,len);
+        }
+        os.close();
+        bis.reset();
+
+        b = new byte[decompressBufferSize];
+        byte[] b2 = new byte[decompressBufferSize];
+        ByteArrayInputStream compressDataStream = new ByteArrayInputStream(compressedDataBuffer.getData());
+        CompressionInputStream ds = c.createInputStream(compressDataStream);
+
+        while((len = ds.read(b)) > 0) {
+            int len2 = bis.read(b2,0,len);
+            for (int i = 0; i < b.length; i++) {
+                assertEquals("Byte " + i + "does not match.",b[i],b2[i]);
+            }
+        }
+        ds.close();
+    }
+
   @Test
   public void testCryptoCodec() throws IOException {
 	conf.set(CryptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
