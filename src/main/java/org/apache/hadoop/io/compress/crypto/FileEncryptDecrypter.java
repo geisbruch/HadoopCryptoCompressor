@@ -84,12 +84,14 @@ public class FileEncryptDecrypter {
 
     private static CommandLine getCommandLine(String[] args) throws ParseException {
         Options options = new Options();
+        options.addOption("h", "help", false, "Show usage.");
         options.addOption("d", "decrypt", false, "Decrypt specified file");
         options.addOption("e", "encrypt", false, "Encrypt specified file");
-        options.addOption("b", "blocksize", true, "Block size to use for encryption");
+        options.addOption("b", "blocksize", true, "Block size to use for encryption. Defaults to 4096");
         Option opt = OptionBuilder.withLongOpt("secret")
                 .withDescription("Secret for encryption / decryption")
                 .isRequired()
+                .withArgName("secret")
                 .hasArgs(1)
                 .create('s');
         options.addOption(opt);
@@ -99,15 +101,26 @@ public class FileEncryptDecrypter {
         try {
             line = parser.parse(options, args);
         } catch (ParseException e) {
-            System.err.print("Could not parse command line: " + e.getMessage());
+            System.err.println("Could not parse command line: " + e.getMessage());
+            printUsage(options);
             throw e;
         }
 
+        if (line.hasOption('h')) {
+            printUsage(options);
+        }
+
         if (!(line.hasOption("decrypt") ^ line.hasOption("encrypt"))) {
-            System.err.print("You must provide the decrypt OR encrypt option");
+            System.err.println("You must provide the decrypt OR encrypt option");
+            printUsage(options);
             throw new ParseException("Invalid options.");
         }
 
         return line;
+    }
+
+    private static void printUsage(Options options) {
+        HelpFormatter hf = new HelpFormatter();
+        hf.printHelp("java -jar [this-jar] -s password -d|-e [input-file] [output-file]",options);
     }
 }
