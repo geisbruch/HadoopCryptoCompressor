@@ -13,5 +13,6 @@ Example:
        org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.crypto.CyptoCodec</value>
     </property>
 
-So if you use CryptoCodec as codec you will need to use as config property **cypto.secret.key** to put your public key
+So if you use CryptoCodec as codec you will need to use as config property **cypto.secret.key** to put your private key 
+(you can define it in runtime)
 
