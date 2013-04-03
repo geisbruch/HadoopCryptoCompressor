@@ -1,11 +1,8 @@
 package org.apache.hadoop.io.compress.crypto;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.compress.Decompressor;
 
 import sec.util.Crypto;

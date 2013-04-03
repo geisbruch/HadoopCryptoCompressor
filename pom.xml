@@ -18,66 +18,34 @@
      
 	</plugins>
    </build>
-  
+  <repositories> 
+    <repository>
+      <id>cloudera</id>
+      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+    </repository>
+  </repositories>
   <dependencies>
-      <dependency>
-      <groupId>apache-haddop</groupId>
-      <artifactId>hadoop-core-0.20.2-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hadoop-core-0.20.2-cdh3u1.jar</systemPath>
-      <!--<systemPath>${project.basedir}/hadoopLib/hadoop-core-0.20.3-CDH3-SNAPSHOT.jar</systemPath>-->
-    </dependency> 
-  	<dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>hive-cli-0.7.1-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hive-cli-0.7.1-cdh3u1.jar</systemPath>
-    </dependency>
-  	<dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>hive-common-0.7.1-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hive-common-0.7.1-cdh3u1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>hive-exec-0.7.1-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hive-exec-0.7.1-cdh3u1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>hive-jdbc-0.7.1-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hive-jdbc-0.7.1-cdh3u1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>hive-metastore-0.7.1-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hive-metastore-0.7.1-cdh3u1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>hive-service-0.7.1-cdh3u1.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/hive-service-0.7.1-cdh3u1.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>apache-hive</groupId>
-      <artifactId>libfb303.jar</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/hadoopLib/libfb303.jar</systemPath>
-    </dependency>
-  	<dependency>
+  <dependency>
+ 		<groupId>org.apache.hadoop</groupId>
+ 		<artifactId>hadoop-core</artifactId>
+ 		<version>0.20.2-cdh3u4</version>
+ 	</dependency>
+ 	<dependency>
+ 		<groupId>org.apache.hadoop</groupId>
+ 		<artifactId>hadoop-client</artifactId>
+ 		<version>0.20.2-cdh3u4</version>
+ 	</dependency>
+ 	<dependency>
+ 		<groupId>org.apache.hadoop</groupId>
+ 		<artifactId>hadoop-test</artifactId>
+ 		<version>0.20.2-cdh3u4</version>
+ 	</dependency>
+ 	<dependency>
+ 		<groupId>org.apache.hadoop.hive</groupId>
+ 		<artifactId>hive-cli</artifactId>
+ 		<version>0.7.1-cdh3u4</version>
+ 	</dependency>
+ 	<dependency>
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
   		<version>4.8.2</version>
