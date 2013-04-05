@@ -14,10 +14,14 @@
               <target>1.6</target>
           </configuration>
       </plugin>
-     
-     
+      
 	</plugins>
    </build>
+   <scm>
+	<connection>scm:git:git@github.com:mercadolibre/HadoopCryptoCompressor.git</connection>
+	<url>scm:git:git@github.com:mercadolibre/HadoopCryptoCompressor.git</url>
+	<developerConnection>scm:git:git@github.com:mercadolibre/HadoopCryptoCompressor.git</developerConnection>
+   </scm>
   <repositories> 
     <repository>
       <id>cloudera</id>
