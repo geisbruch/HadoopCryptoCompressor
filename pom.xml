@@ -2,9 +2,17 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ml</groupId>
   <artifactId>HadoopCryptoCompressor</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.3-SNAPSHOT</version>
    <build>
 	<plugins>
+       <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+           <artifactId>maven-release-plugin</artifactId>
+           <version>2.2</version>
+           <configuration>
+               <arguments>-DaltDeploymentRepository=/${altDeploymentRepository}</arguments>
+           </configuration>
+       </plugin>
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
