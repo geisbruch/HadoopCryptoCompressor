@@ -38,8 +38,8 @@ import org.apache.hadoop.io.RandomDatum;
 import org.apache.hadoop.io.SequenceFile;
 import org.apache.hadoop.io.SequenceFile.CompressionType;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.io.compress.crypto.CryptoCodec;
+import org.apache.hadoop.io.Writable; 
+import org.apache.hadoop.io.compress.CryptoCodec;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.junit.Test;
 
@@ -56,8 +56,8 @@ public class TestCodec {
   @Test
   public void testCryptoCodec() throws IOException {
 	conf.set(CryptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
-    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.crypto.CryptoCodec");
-    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.crypto.CryptoCodec");
+    codecTest(conf, seed, 0, "org.apache.hadoop.io.compress.CryptoCodec");
+    codecTest(conf, seed, count, "org.apache.hadoop.io.compress.CryptoCodec");
   }
 
 
@@ -108,7 +108,6 @@ public class TestCodec {
       codec.createInputStream(deCompressedDataBuffer);
     DataInputStream inflateIn = 
       new DataInputStream(new BufferedInputStream(inflateFilter));
-
     // Check
     DataInputBuffer originalData = new DataInputBuffer();
     originalData.reset(data.getData(), 0, data.getLength());
@@ -152,8 +151,8 @@ public class TestCodec {
   public void testSequenceFileCryptoCodec() throws IOException, ClassNotFoundException,
       InstantiationException, IllegalAccessException {
 	conf.set(CryptoCodec.CRYPTO_SECRET_KEY, "Una clave cualquiera");
-    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.crypto.CryptoCodec", 100);
-    sequenceFileCodecTest(conf, 200000,"org.apache.hadoop.io.compress.crypto.CryptoCodec", 1000000);
+    sequenceFileCodecTest(conf, 100, "org.apache.hadoop.io.compress.CryptoCodec", 100);
+    sequenceFileCodecTest(conf, 200000,"org.apache.hadoop.io.compress.CryptoCodec", 1000000);
   }
 
   

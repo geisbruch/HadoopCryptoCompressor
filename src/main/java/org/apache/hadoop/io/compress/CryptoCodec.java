@@ -1,4 +1,4 @@
-package org.apache.hadoop.io.compress.crypto;
+package org.apache.hadoop.io.compress;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +15,8 @@ import org.apache.hadoop.io.compress.CompressionInputStream;
 import org.apache.hadoop.io.compress.CompressionOutputStream;
 import org.apache.hadoop.io.compress.Compressor;
 import org.apache.hadoop.io.compress.Decompressor;
+import org.apache.hadoop.io.compress.crypto.CryptoBasicCompressor;
+import org.apache.hadoop.io.compress.crypto.CryptoBasicDecompressor;
 
 /**
  * This Crypt Codec enable you to create crypto files using this codec as a compressor

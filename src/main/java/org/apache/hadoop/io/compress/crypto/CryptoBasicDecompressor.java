@@ -110,4 +110,9 @@ public class CryptoBasicDecompressor implements Decompressor {
 	public boolean needsDictionary() {
 		return false;
 	}
+
+	@Override
+	public int getRemaining() {
+		return 0;
+	}
 }
