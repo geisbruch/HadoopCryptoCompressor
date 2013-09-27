@@ -5,14 +5,13 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.io.compress.CryptoCodec;
 import org.apache.hadoop.io.compress.Decompressor;
 
 import sec.util.Crypto;
 
 public class CryptoBasicDecompressor implements Decompressor {
 
-	private static final Log LOG = LogFactory.getLog(CryptoCodec.class);
+	private static final Log LOG = LogFactory.getLog(CryptoBasicDecompressor.class);
 
 	Crypto crypto;
 

@@ -14,7 +14,7 @@ Example:
     <property>
        <name>io.compression.codecs</name>
        <value>org.apache.hadoop.io.compress.DefaultCodec,org.apache.hadoop.io.compress.GzipCodec,
-       org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.crypto.CryptoCodec</value>
+       org.apache.hadoop.io.compress.BZip2Codec,org.apache.hadoop.io.compress.CryptoCodec</value>
     </property>
 
 So if you use CryptoCodec as codec you will need to use as config property **crypto.secret.key** to put your private key 

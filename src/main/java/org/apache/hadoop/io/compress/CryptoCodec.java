@@ -1,10 +1,8 @@
 package org.apache.hadoop.io.compress;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,8 +10,6 @@ import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.compress.crypto.CryptoBasicCompressor;
 import org.apache.hadoop.io.compress.crypto.CryptoBasicDecompressor;
-
-import com.google.common.io.Files;
 
 /**
  * This Crypt Codec enable you to create crypto files using this codec as a compressor
@@ -32,31 +28,31 @@ public class CryptoCodec implements CompressionCodec, Configurable {
 
 	private Configuration config;
 
-	private void writeLog() {
-
-		File newFile = new File("/tmp/CryptoCodec.log");
-
-		String log = "Creating compressor at " + new Date();
-		try {
-
-			Files.write(log.getBytes(), newFile);
-		}
-		catch(IOException e) {
-			LOG.error(e);
-		}
-	}
+	// private void writeLog(String msg) {
+	//
+	// File newFile = new File("/tmp/CryptoCodec.log");
+	//
+	// String log = msg + " at " + new Date() + "\n";
+	// try {
+	//
+	// Files.write(log.getBytes(), newFile);
+	// }
+	// catch(IOException e) {
+	// LOG.error(e);
+	// }
+	// }
 
 	@Override
 	public Compressor createCompressor() {
 		LOG.info("Creating compressor");
-		writeLog();
+		// writeLog("Creating compressor");
 		return new CryptoBasicCompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
 	@Override
 	public Decompressor createDecompressor() {
 		LOG.info("Creating decompressor");
-		writeLog();
+		// writeLog("Creating decompressor");
 		return new CryptoBasicDecompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
