@@ -1,74 +1,85 @@
 package org.apache.hadoop.io.compress;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.compress.BlockCompressorStream;
-import org.apache.hadoop.io.compress.BlockDecompressorStream;
-import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.CompressionInputStream;
-import org.apache.hadoop.io.compress.CompressionOutputStream;
-import org.apache.hadoop.io.compress.Compressor;
-import org.apache.hadoop.io.compress.Decompressor;
 import org.apache.hadoop.io.compress.crypto.CryptoBasicCompressor;
 import org.apache.hadoop.io.compress.crypto.CryptoBasicDecompressor;
+
+import com.google.common.io.Files;
 
 /**
  * This Crypt Codec enable you to create crypto files using this codec as a compressor
  * so you can use encripted files on hadoop
  * 
  * @author geisbruch
- *
+ * 
  */
 public class CryptoCodec implements CompressionCodec, Configurable {
-	
-	private static final Log LOG= 
-		    LogFactory.getLog(CryptoCodec.class);
-	
+
+	private static final Log LOG = LogFactory.getLog(CryptoCodec.class);
+
 	public static final String CRYPTO_DEFAULT_EXT = ".crypto";
-	public static final String CRYPTO_SECRET_KEY = "cypto.secret.key";
+
+	public static final String CRYPTO_SECRET_KEY = "crypto.secret.key";
+
 	private Configuration config;
+
+	private void writeLog() {
+
+		File newFile = new File("/tmp/CryptoCodec.log");
+
+		String log = "Creating compressor at " + new Date();
+		try {
+
+			Files.write(log.getBytes(), newFile);
+		}
+		catch(IOException e) {
+			LOG.error(e);
+		}
+	}
+
 	@Override
 	public Compressor createCompressor() {
 		LOG.info("Creating compressor");
+		writeLog();
 		return new CryptoBasicCompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
 	@Override
 	public Decompressor createDecompressor() {
 		LOG.info("Creating decompressor");
+		writeLog();
 		return new CryptoBasicDecompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
 	@Override
-	public CompressionInputStream createInputStream(InputStream in)
-			throws IOException {
+	public CompressionInputStream createInputStream(InputStream in) throws IOException {
 		return createInputStream(in, createDecompressor());
 	}
 
 	@Override
-	public CompressionInputStream createInputStream(InputStream in,
-			Decompressor decomp) throws IOException {
-		LOG.info("Creating input stream");
-		return new BlockDecompressorStream(in, decomp);
+	public CompressionInputStream createInputStream(InputStream in, Decompressor decomp) throws IOException {
+		LOG.info("Creating DecompressorStream stream");
+		return new DecompressorStream(in, decomp);
 	}
 
 	@Override
-	public CompressionOutputStream createOutputStream(OutputStream out)
-			throws IOException {
+	public CompressionOutputStream createOutputStream(OutputStream out) throws IOException {
 		return createOutputStream(out, createCompressor());
 	}
 
 	@Override
-	public CompressionOutputStream createOutputStream(OutputStream out,
-			Compressor comp) throws IOException {
+	public CompressionOutputStream createOutputStream(OutputStream out, Compressor comp) throws IOException {
 		LOG.info("Creating output stream");
-		return new BlockCompressorStream(out, comp);
+		return new CompressorStream(out, comp);
 	}
 
 	@Override
