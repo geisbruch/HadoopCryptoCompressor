@@ -5,11 +5,14 @@ import java.nio.ByteBuffer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.io.compress.CryptoCodec;
 import org.apache.hadoop.io.compress.Decompressor;
 
 import sec.util.Crypto;
 
 public class CryptoBasicDecompressor implements Decompressor {
+
+	private static final Log LOG = LogFactory.getLog(CryptoCodec.class);
 
 	Crypto crypto;
 
@@ -19,10 +22,9 @@ public class CryptoBasicDecompressor implements Decompressor {
 
 	private boolean finished = false;
 
-	private static final Log LOG = LogFactory.getLog(CryptoBasicDecompressor.class);
-
 	public CryptoBasicDecompressor(String key) {
 		crypto = new Crypto(key);
+		LOG.info("Init CryptoBasicDecompressor...");
 	}
 
 	@Override
@@ -30,14 +32,17 @@ public class CryptoBasicDecompressor implements Decompressor {
 		ensureBuffer(len);
 
 		if(out.position() >= len) {
+			LOG.debug("out.position():" + out.position() + " len:" + len);
 			finished = true;
 		}
 
 		if(finished && in == null) {
+			LOG.debug("decompress flushBuffer....");
 			return flushBuffer(buf, off, out.position());
 		}
 
 		if(needsInput()) {
+			LOG.debug("needsInput....");
 			return 0;
 		}
 
@@ -46,6 +51,7 @@ public class CryptoBasicDecompressor implements Decompressor {
 		if(b == null) {
 			throw new IOException("Invalid key");
 		}
+		LOG.debug("decrypt:" + b.length);
 		ensureBuffer(out.position() + b.length);
 		out.put(b);
 		return flushBuffer(buf, off, len);
@@ -63,8 +69,14 @@ public class CryptoBasicDecompressor implements Decompressor {
 		}
 	}
 
+	@Override
+	public int getRemaining() {
+		return 0;
+	}
+
 	private int flushBuffer(byte[] buf, int off, int len) {
 		int size = Math.min(Math.min(len, buf.length) - off, out.position());
+		LOG.info("flushBuffer size:" + size);
 		if(size <= 0)
 			return 0;
 		out.flip();
@@ -81,14 +93,16 @@ public class CryptoBasicDecompressor implements Decompressor {
 
 	@Override
 	public boolean finished() {
+		LOG.info("finished:" + finished);
 		return finished;
 	}
 
 	@Override
 	public boolean needsInput() {
-		boolean needsInput = in == null || in.length < 0;
+		boolean needsInput = (in == null || in.length < 0);
 		if(needsInput)
 			finished = true;
+		LOG.info("needsInput:" + needsInput);
 		return needsInput;
 	}
 
@@ -104,6 +118,7 @@ public class CryptoBasicDecompressor implements Decompressor {
 
 	@Override
 	public synchronized void setInput(byte[] buf, int offset, int length) {
+		LOG.info("setInputsize buf size" + buf.length + " length:" + length);
 		if(length > 0) {
 			in = new byte[length];
 			int inIdx = 0;
@@ -118,10 +133,5 @@ public class CryptoBasicDecompressor implements Decompressor {
 	@Override
 	public boolean needsDictionary() {
 		return false;
-	}
-
-	@Override
-	public int getRemaining() {
-		return 0;
 	}
 }
