@@ -23,19 +23,9 @@ So if you use CryptoCodec as codec you will need to use as config property **cry
 ### From the command line
 From the command line, you can encrypt and decrypt files using the following:
 
-    java -jar target/HadoopCryptoCompressor-0.0.1-SNAPSHOT-jar-with-dependencies.jar -e -s "password" -b 4096 test test.crypto
+    java -jar target/HadoopCryptoCompressor-0.0.6-SNAPSHOT.jar -e -aeskey "key"  test test.crypto
 
-    java -jar target/HadoopCryptoCompressor-0.0.1-SNAPSHOT-jar-with-dependencies.jar -d -s "password" -b 4096 test.crypto test.new
+    java -jar target/HadoopCryptoCompressor-0.0.6-SNAPSHOT.jar -d -aeskey "key"  test.crypto test.new
 
 You can use the -h option to get more details.
 
-### In other JVM applications (Groovy Below)
-    //Decrypt file from S3 and consolidate in a single output stream
-    FileEncryptDecrypter fed = new FileEncryptDecrypter(mySecretKey)
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
-    s3list.objectSummaries.each {
-        if(it.key.endsWith(".crypto")) {
-            def obj = s3client.getObject(S3_BUCKET, it.key)
-            fed.decryptFile(obj.objectContent,outputStream,1024)
-        }
-    }
