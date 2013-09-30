@@ -28,31 +28,15 @@ public class CryptoCodec implements CompressionCodec, Configurable {
 
 	private Configuration config;
 
-	// private void writeLog(String msg) {
-	//
-	// File newFile = new File("/tmp/CryptoCodec.log");
-	//
-	// String log = msg + " at " + new Date() + "\n";
-	// try {
-	//
-	// Files.write(log.getBytes(), newFile);
-	// }
-	// catch(IOException e) {
-	// LOG.error(e);
-	// }
-	// }
-
 	@Override
 	public Compressor createCompressor() {
 		LOG.info("Creating compressor");
-		// writeLog("Creating compressor");
 		return new CryptoBasicCompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
 	@Override
 	public Decompressor createDecompressor() {
 		LOG.info("Creating decompressor");
-		// writeLog("Creating decompressor");
 		return new CryptoBasicDecompressor(config.get(CRYPTO_SECRET_KEY));
 	}
 
