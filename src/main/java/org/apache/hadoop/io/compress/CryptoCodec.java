@@ -8,13 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.io.compress.BlockCompressorStream;
-import org.apache.hadoop.io.compress.BlockDecompressorStream;
-import org.apache.hadoop.io.compress.CompressionCodec;
-import org.apache.hadoop.io.compress.CompressionInputStream;
-import org.apache.hadoop.io.compress.CompressionOutputStream;
-import org.apache.hadoop.io.compress.Compressor;
-import org.apache.hadoop.io.compress.Decompressor;
 import org.apache.hadoop.io.compress.crypto.CryptoBasicCompressor;
 import org.apache.hadoop.io.compress.crypto.CryptoBasicDecompressor;
 
@@ -23,16 +16,18 @@ import org.apache.hadoop.io.compress.crypto.CryptoBasicDecompressor;
  * so you can use encripted files on hadoop
  * 
  * @author geisbruch
- *
+ * 
  */
 public class CryptoCodec implements CompressionCodec, Configurable {
-	
-	private static final Log LOG= 
-		    LogFactory.getLog(CryptoCodec.class);
-	
+
+	private static final Log LOG = LogFactory.getLog(CryptoCodec.class);
+
 	public static final String CRYPTO_DEFAULT_EXT = ".crypto";
-	public static final String CRYPTO_SECRET_KEY = "cypto.secret.key";
+
+	public static final String CRYPTO_SECRET_KEY = "crypto.secret.key";
+
 	private Configuration config;
+
 	@Override
 	public Compressor createCompressor() {
 		LOG.info("Creating compressor");
@@ -46,29 +41,25 @@ public class CryptoCodec implements CompressionCodec, Configurable {
 	}
 
 	@Override
-	public CompressionInputStream createInputStream(InputStream in)
-			throws IOException {
+	public CompressionInputStream createInputStream(InputStream in) throws IOException {
 		return createInputStream(in, createDecompressor());
 	}
 
 	@Override
-	public CompressionInputStream createInputStream(InputStream in,
-			Decompressor decomp) throws IOException {
-		LOG.info("Creating input stream");
-		return new BlockDecompressorStream(in, decomp);
+	public CompressionInputStream createInputStream(InputStream in, Decompressor decomp) throws IOException {
+		LOG.info("Creating DecompressorStream stream");
+		return new DecompressorStream(in, decomp);
 	}
 
 	@Override
-	public CompressionOutputStream createOutputStream(OutputStream out)
-			throws IOException {
+	public CompressionOutputStream createOutputStream(OutputStream out) throws IOException {
 		return createOutputStream(out, createCompressor());
 	}
 
 	@Override
-	public CompressionOutputStream createOutputStream(OutputStream out,
-			Compressor comp) throws IOException {
+	public CompressionOutputStream createOutputStream(OutputStream out, Compressor comp) throws IOException {
 		LOG.info("Creating output stream");
-		return new BlockCompressorStream(out, comp);
+		return new CompressorStream(out, comp);
 	}
 
 	@Override
