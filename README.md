@@ -23,9 +23,9 @@ So if you use CryptoCodec as codec you will need to use as config property **cry
 ### From the command line
 From the command line, you can encrypt and decrypt files using the following:
 
-    java -jar target/HadoopCryptoCompressor-0.0.6-SNAPSHOT.jar -e -aeskey "key"  test test.crypto
+    java -jar target/HadoopCryptoCompressor-0.0.6-SNAPSHOT.jar -e -aeskey "key" -in test -out test.crypto
 
-    java -jar target/HadoopCryptoCompressor-0.0.6-SNAPSHOT.jar -d -aeskey "key"  test.crypto test.new
+    java -jar target/HadoopCryptoCompressor-0.0.6-SNAPSHOT.jar -d -aeskey "key" -in test.crypto -out test.new
 
 You can use the -h option to get more details.
 
